@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLC Collaborative Work Cycle & Reflection Tool</title>
+    <!-- Tailwind CSS for modern, clean, scannable styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .print-break { page-break-before: always; }
+            body { background-color: white; color: black; }
+            input, textarea, select { border: none !important; resize: none; background: transparent !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="bg-indigo-900 text-white shadow-md py-6 px-8 no-print">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">PLC Collaborative Work Cycle Tool</h1>
+                <p class="text-indigo-200 text-sm mt-1">Based on PLCs at Work® by Solution Tree</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow">
+                    Print / Export Summary
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation / Progress Tracker -->
+    <nav class="bg-white border-b border-slate-200 shadow-sm no-print sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between md:justify-start space-x-8">
+                <button onclick="switchTab('data-analysis')" id="tab-data-analysis" class="tab-btn py-4 px-2 font-semibold border-b-2 border-indigo-600 text-indigo-600 transition duration-200">
+                    1. Data Analysis (CFA)
+                </button>
+                <button onclick="switchTab('intervention-plans')" id="tab-intervention-plans" class="tab-btn py-4 px-2 font-semibold border-b-2 border-transparent text-slate-500 hover:text-indigo-600 transition duration-200">
+                    2. Intervention Plans
+                </button>
+                <button onclick="switchTab('measuring-impact')" id="tab-measuring-impact" class="tab-btn py-4 px-2 font-semibold border-b-2 border-transparent text-slate-500 hover:text-indigo-600 transition duration-200">
+                    3. Measuring Impact & Future Practice
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Work Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-8">
+        <form id="plcForm">
+
+            <!-- SECTION 1: DATA ANALYSIS -->
+            <section id="sec-data-analysis" class="form-section space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-2 mb-4">Step 1 & 2: Set the Stage & Review Assessment Focus</h2>
+                    
+                    <details class="mb-4 bg-amber-50 p-3 rounded-lg border border-amber-200 text-sm text-amber-900">
+                        <summary class="font-semibold cursor-pointer select-none">💡 Help Tool: Facilitator Guidance & Scaffolding</summary>
+                        <p class="mt-2"><strong>Timeframe:</strong> ~4 minutes. Establish your meeting purpose clearly. Review your collective data norms before looking at scores. Identify your primary essential standard, target items, and common proficiency criteria (e.g., 2 out of 3 correct or a 3 on the rubric) before grouping students.</p>
+                    </details>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Team Meeting Norms Reviewed?</label>
+                            <select class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500 focus:border-indigo-500">
+                                <option>Yes, norms reviewed and validated</option>
+                                <option>Yes, with adjustments</option>
+                                <option>No, skipped today</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Essential Target Standard Under Review</label>
+                            <input type="text" placeholder="e.g., CCSS.MATH.CONTENT.6.NS.A.1" class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Proficiency Expectations Criteria</label>
+                            <textarea rows="2" placeholder="Describe what proficiency looks like (e.g., Score of 3+ on rubric, 80% correct on targeted items)..." class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-2 mb-4">Step 3: Patterns, Errors & Misconceptions</h2>
+                    
+                    <details class="mb-4 bg-amber-50 p-3 rounded-lg border border-amber-200 text-sm text-amber-900">
+                        <summary class="font-semibold cursor-pointer select-none">💡 Help Tool: Analyzing Student Performance Data</summary>
+                        <p class="mt-2"><strong>Timeframe:</strong> ~10 minutes. Evaluate learning targets individually. Focus on identifying specific categories of errors rather than just tracking numeric percentages. Group students systematically based on why they missed the mark (e.g., basic calculation errors vs. structural/pathway misunderstandings).</p>
+                    </details>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Overall Team Strengths Observed</label>
+                            <textarea rows="3" placeholder="What parts of the target did students master best? Which teacher strategies yielded excellent outcomes?" class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Identified Misconceptions & Structural Patterns</label>
+                            <textarea rows="3" placeholder="Group common mistakes here (e.g., Class A struggled with formatting steps; Class B missed calculation steps entirely)..." class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end no-print">
+                    <button type="button" onclick="switchTab('intervention-plans')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 px-6 rounded-lg shadow transition">
+                        Next: Section 2 - Intervention Plans &rarr;
+                    </button>
+                </div>
+            </section>
+
+
+            <!-- SECTION 2: INTERVENTION PLANS -->
+            <section id="sec-intervention-plans" class="form-section space-y-6 hidden">
+                
+                <!-- Current Reality Audit Framework (Questions 3 & 4) -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-2 mb-2">Analyzing the Current Reality (Critical Questions 3 & 4)</h2>
+                    <p class="text-sm text-slate-500 mb-4">Self-assess your team's structural readiness to execute intervention and extensions effectively.</p>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-xs font-semibold text-slate-700 uppercase tracking-wider border-b border-slate-200">
+                                    <th class="p-3">Concept Mastery Area</th>
+                                    <th class="p-3">Current Status Assessment</th>
+                                    <th class="p-3">Concrete Evidence Description</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-slate-200">
+                                <tr>
+                                    <td class="p-3 font-medium">Process to identify students needing intervention or extension targets</td>
+                                    <td class="p-3">
+                                        <select class="rounded border-slate-300 p-1 bg-slate-50 border text-xs w-full">
+                                            <option>Not at all true</option>
+                                            <option>Somewhat true</option>
+                                            <option>Mostly true</option>
+                                            <option>Always true</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-3"><input type="text" placeholder="Describe existing practice..." class="w-full border-b border-slate-200 bg-transparent py-1 focus:outline-none focus:border-indigo-500 text-xs"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-medium">Team execution of specific instructional strategies for tier support</td>
+                                    <td class="p-3">
+                                        <select class="rounded border-slate-300 p-1 bg-slate-50 border text-xs w-full">
+                                            <option>Not at all true</option>
+                                            <option>Somewhat true</option>
+                                            <option>Mostly true</option>
+                                            <option>Always true</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-3"><input type="text" placeholder="Describe existing practice..." class="w-full border-b border-slate-200 bg-transparent py-1 focus:outline-none focus:border-indigo-500 text-xs"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-medium">Actionable pathway for managing prerequisite gaps</td>
+                                    <td class="p-3">
+                                        <select class="rounded border-slate-300 p-1 bg-slate-50 border text-xs w-full">
+                                            <option>Not at all true</option>
+                                            <option>Somewhat true</option>
+                                            <option>Mostly true</option>
+                                            <option>Always true</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-3"><input type="text" placeholder="Describe existing practice..." class="w-full border-b border-slate-200 bg-transparent py-1 focus:outline-none focus:border-indigo-500 text-xs"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-medium">Process for implementing core reteaching workflows</td>
+                                    <td class="p-3">
+                                        <select class="rounded border-slate-300 p-1 bg-slate-50 border text-xs w-full">
+                                            <option>Not at all true</option>
+                                            <option>Somewhat true</option>
+                                            <option>Mostly true</option>
+                                            <option>Always true</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-3"><input type="text" placeholder="Describe existing practice..." class="w-full border-b border-slate-200 bg-transparent py-1 focus:outline-none focus:border-indigo-500 text-xs"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-medium">Clear system for building extended learning opportunities</td>
+                                    <td class="p-3">
+                                        <select class="rounded border-slate-300 p-1 bg-slate-50 border text-xs w-full">
+                                            <option>Not at all true</option>
+                                            <option>Somewhat true</option>
+                                            <option>Mostly true</option>
+                                            <option>Always true</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-3"><input type="text" placeholder="Describe existing practice..." class="w-full border-b border-slate-200 bg-transparent py-1 focus:outline-none focus:border-indigo-500 text-xs"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Structured Intervention Action Planner -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-2 mb-4">Step 4: Team-Based Intervention & Extension Strategy</h2>
+                    
+                    <details class="mb-4 bg-amber-50 p-3 rounded-lg border border-amber-200 text-sm text-amber-900">
+                        <summary class="font-semibold cursor-pointer select-none">💡 Help Tool: Selecting Intervention Modalities</summary>
+                        <p class="mt-2"><strong>Timeframe:</strong> ~15 minutes. Pick tactical, concrete responses. Group students directly according to their root cause of struggle, and assign corresponding extensions to advanced learners who already hit proficiency targets.</p>
+                    </details>
+
+                    <div class="space-y-4">
+                        <label class="block text-sm font-semibold text-slate-800">Select Targeted Interventions Needed (Check all that apply):</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <label class="flex items-start p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer text-sm">
+                                <input type="checkbox" class="mt-1 mr-3 rounded text-indigo-600 focus:ring-indigo-500">
+                                <span><strong>Prerequisite Learning Support:</strong> Gaps in foundational knowledge/skills preventing mastery of current standard.</span>
+                            </label>
+                            <label class="flex items-start p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer text-sm">
+                                <input type="checkbox" class="mt-1 mr-3 rounded text-indigo-600 focus:ring-indigo-500">
+                                <span><strong>Additional Focused Practice:</strong> Easily corrected execution errors; needs brief opportunities to apply skills.</span>
+                            </label>
+                            <label class="flex items-start p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer text-sm">
+                                <input type="checkbox" class="mt-1 mr-3 rounded text-indigo-600 focus:ring-indigo-500">
+                                <span><strong>Alternative Demonstrations:</strong> Alternative modalities/tasks to show conceptual understanding.</span>
+                            </label>
+                            <label class="flex items-start p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer text-sm">
+                                <input type="checkbox" class="mt-1 mr-3 rounded text-indigo-600 focus:ring-indigo-500">
+                                <span><strong>Work Behavior & Habit Support:</strong> Enhancing universal academic behaviors (e.g., class participation, preparation).</span>
+                            </label>
+                            <label class="flex items-start p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer text-sm md:col-span-2">
+                                <input type="checkbox" class="mt-1 mr-3 rounded text-indigo-600 focus:ring-indigo-500">
+                                <span><strong>Learning Extensions / Advanced Pathways:</strong> Enriching content or deep-dive applications for students who met proficiency guidelines.</span>
+                            </label>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Our Targeted Reteaching & Extension Action Plan:</label>
+                            <textarea rows="4" placeholder="Outline specific, concrete steps (Who is running small groups? What alternative resources are being leveraged? What timelines apply?)..." class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Roster Organizer Grid -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-slate-900 border-b pb-1 mb-3">Student Deployment Map</h3>
+                    <p class="text-xs text-slate-500 mb-4">Map students directly to teachers to clarify responsibility for execution.</p>
+                    
+                    <div id="roster-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                            <input type="text" placeholder="Teacher Name" class="font-semibold text-sm bg-transparent border-b border-slate-300 pb-1 mb-2 w-full focus:outline-none focus:border-indigo-500">
+                            <textarea rows="2" placeholder="List students needing intervention/extension..." class="w-full text-xs p-2 rounded bg-white border border-slate-200"></textarea>
+                        </div>
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                            <input type="text" placeholder="Teacher Name" class="font-semibold text-sm bg-transparent border-b border-slate-300 pb-1 mb-2 w-full focus:outline-none focus:border-indigo-500">
+                            <textarea rows="2" placeholder="List students needing intervention/extension..." class="w-full text-xs p-2 rounded bg-white border border-slate-200"></textarea>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addRosterRow()" class="mt-3 inline-flex items-center text-xs font-semibold text-indigo-600 hover:text-indigo-500 no-print">
+                        + Add Another Classroom Teacher Section
+                    </button>
+                </div>
+
+                <div class="flex justify-between no-print">
+                    <button type="button" onclick="switchTab('data-analysis')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-6 rounded-lg transition">
+                        &larr; Back to Data Analysis
+                    </button>
+                    <button type="button" onclick="switchTab('measuring-impact')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 px-6 rounded-lg shadow transition">
+                        Next: Section 3 - Measuring Impact &rarr;
+                    </button>
+                </div>
+            </section>
+
+
+            <!-- SECTION 3: MEASURING IMPACT -->
+            <section id="sec-measuring-impact" class="form-section space-y-6 hidden">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-2 mb-4">Step 5: Post-Intervention Monitoring Tools</h2>
+                    
+                    <details class="mb-4 bg-amber-50 p-3 rounded-lg border border-amber-200 text-sm text-amber-900">
+                        <summary class="font-semibold cursor-pointer select-none">💡 Help Tool: Reassessment Design Guidance</summary>
+                        <p class="mt-2"><strong>Timeframe:</strong> ~10 minutes. Determine exactly how you will measure recovery. This does not have to be a long written exam—consider focused parallel prompts, verbal check-ins, performance checkmarks, or short adaptive exit tickets.</p>
+                    </details>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Reassessment Approach Strategy</label>
+                            <textarea rows="2" placeholder="How will we verify learning? (e.g., Short 3-question parallel quiz, targeted interview checklist during core instruction)..." class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Students Requiring Additional Core/Systemic Support</label>
+                            <textarea rows="2" placeholder="Identify students who did not meet standard target proficiency guidelines even after tier interventions..." class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-2 mb-4">Step 6: Future Instructional Adjustments & Continuous Improvement</h2>
+                    
+                    <details class="mb-4 bg-amber-50 p-3 rounded-lg border border-amber-200 text-sm text-amber-900">
+                        <summary class="font-semibold cursor-pointer select-none">💡 Help Tool: Team Work Cycle Optimization</summary>
+                        <p class="mt-2"><strong>Timeframe:</strong> ~5 minutes. Translate observations into long-term professional gains. Analyze structural gaps in pacing, curriculum clarity, or initial instructional actions to build a sustainable, iterative practice baseline.</p>
+                    </details>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Curricular or Pacing Adjustments Required</label>
+                            <textarea rows="2" placeholder="What parts of our curriculum maps, timelines, or diagnostic criteria require adjustment based on these metrics?" class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Core Professional Insights & Strategies to Retain</label>
+                            <textarea rows="2" placeholder="Which pedagogical moves worked incredibly well? What structural improvements will we maintain for our next unit work cycle?" class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between no-print">
+                    <button type="button" onclick="switchTab('intervention-plans')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-6 rounded-lg transition">
+                        &larr; Back to Interventions
+                    </button>
+                    <button type="button" onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 px-6 rounded-lg shadow transition">
+                        Print / Download Final Review Summary
+                    </button>
+                </div>
+            </section>
+
+        </form>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-400 text-xs py-4 text-center border-t border-slate-700 no-print">
+        Designed to align with the standard 6-Step Common Formative Assessment Protocol & Continuous Professional Learning Communities Framework.
+    </footer>
+
+    <!-- Interactive Navigation Scripts -->
+    <script>
+        function switchTab(tabId) {
+            // Hide all functional block sections
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Deactivate highlight colors across navigation tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-indigo-600', 'text-indigo-600');
+                btn.classList.add('border-transparent', 'text-slate-500');
+            });
+
+            // Make the targeted selection view visible
+            document.getElementById('sec-' + tabId).classList.remove('hidden');
+
+            // Apply active styles to selected navigation element
+            const activeTab = document.getElementById('tab-' + tabId);
+            activeTab.classList.remove('border-transparent', 'text-slate-500');
+            activeTab.classList.add('border-indigo-600', 'text-indigo-600');
+
+            // Scroll cleanly to the top of screen view
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function addRosterRow() {
+            const grid = document.getElementById('roster-grid');
+            const newCard = document.createElement('div');
+            newCard.className = "p-3 bg-slate-50 border border-slate-200 rounded-lg";
+            newCard.innerHTML = `
+                <input type="text" placeholder="Teacher Name" class="font-semibold text-sm bg-transparent border-b border-slate-300 pb-1 mb-2 w-full focus:outline-none focus:border-indigo-500">
+                <textarea rows="2" placeholder="List students needing intervention/extension..." class="w-full text-xs p-2 rounded bg-white border border-slate-200"></textarea>
+            `;
+            grid.appendChild(newCard);
+        }
+    </script>
+</body>
+</html>
