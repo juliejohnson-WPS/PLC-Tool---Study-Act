@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLC Data-Driven Reflection Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .print-break { page-break-before: always; }
+            body { background-color: white; color: black; }
+            input, textarea, select { border: none !important; resize: none; background: transparent !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <header class="bg-indigo-900 text-white shadow-md py-6 px-8 no-print">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">PLC Collaborative Reflection Tool</h1>
+                <p class="text-indigo-200 text-sm mt-1">Teacher-by-Teacher Data Breakdown & Action Cycles</p>
+            </div>
+            <div>
+                <button type="button" onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition shadow-sm">
+                    Print / Export PDF Summary
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="bg-white border-b border-slate-200 shadow-sm no-print sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between md:justify-start space-x-8">
+                <button type="button" onclick="switchTab('data-analysis')" id="tab-data-analysis" class="tab-btn py-4 px-2 font-bold border-b-2 border-indigo-600 text-indigo-600 transition duration-200">
+                    1. Data Analysis (Teacher Breakdown)
+                </button>
+                <button type="button" onclick="switchTab('intervention-plans')" id="tab-intervention-plans" class="tab-btn py-4 px-2 font-semibold border-b-2 border-transparent text-slate-500 hover:text-indigo-600 transition duration-200">
+                    2. Intervention Plans
+                </button>
+                <button type="button" onclick="switchTab('measuring-impact')" id="tab-measuring-impact" class="tab-btn py-4 px-2 font-semibold border-b-2 border-transparent text-slate-500 hover:text-indigo-600 transition duration-200">
+                    3. Measuring Our Impact
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-8">
+        <form id="plcForm" onsubmit="event.preventDefault();">
+
+            <section id="sec-data-analysis" class="form-section space-y-6">
+                
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-2 mb-4">Steps 1 & 2: Assessment Focus & Teacher-by-Teacher Data Breakdown</h2>
+                    
+                    <div class="mb-4 bg-amber-50 p-4 rounded-lg border border-amber-200 text-sm text-amber-900">
+                        <p class="font-semibold">💡 Help Tool (From "analyzingcommonformativeassessmentdataprotocol (1).pdf"):</p>
+                        <p class="mt-1">Identify the essential standards and proficiency criteria under review. Input numeric student records for each teacher below. Percentages and combined PLC team totals calculate automatically across all rows.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Essential Standards & Learning Targets Assessed</label>
+                            <input type="text" placeholder="e.g., Target 1: Finding common denominators" class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Expectations for Proficiency</label>
+                            <input type="text" placeholder="e.g., 80% or higher on targeted items" class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto mb-4">
+                        <table class="w-full text-left border-collapse border border-slate-200">
+                            <thead>
+                                <tr class="bg-slate-100 text-xs font-semibold text-slate-700 uppercase tracking-wider border-b border-slate-200">
+                                    <th class="p-3 border border-slate-200">Teacher Name</th>
+                                    <th class="p-3 border border-slate-200 w-32">Total Evaluated</th>
+                                    <th class="p-3 border border-slate-200 w-32">Proficient Students</th>
+                                    <th class="p-3 border border-slate-200 w-40 text-center">Proficiency %</th>
+                                    <th class="p-3 border border-slate-200 w-32">Not Yet Proficient</th>
+                                    <th class="p-3 border border-slate-200 w-40 text-center">Not Proficient %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacher-data-body" class="text-sm divide-y divide-slate-200">
+                                <tr class="teacher-row">
+                                    <td class="p-2 border border-slate-200">
+                                        <input type="text" placeholder="e.g., Mr. Smith" class="w-full bg-transparent p-1 border-b border-transparent focus:outline-none focus:border-indigo-500 font-medium">
+                                    </td>
+                                    <td class="p-2 border border-slate-200">
+                                        <input type="number" placeholder="0" class="total-input w-full p-1 bg-slate-50 border rounded text-center focus:ring-indigo-500">
+                                    </td>
+                                    <td class="p-2 border border-slate-200">
+                                        <input type="number" placeholder="0" class="prof-input w-full p-1 bg-slate-50 border rounded text-center focus:ring-indigo-500">
+                                    </td>
+                                    <td class="p-3 border border-slate-200 font-bold text-emerald-600 text-center row-prof-pct">0%</td>
+                                    <td class="p-2 border border-slate-200">
+                                        <input type="number" placeholder="0" class="not-prof-input w-full p-1 bg-slate-50 border rounded text-center focus:ring-indigo-500">
+                                    </td>
+                                    <td class="p-3 border border-slate-200 font-bold text-rose-600 text-center row-not-prof-pct">0%</td>
+                                </tr>
+                                <tr class="teacher-row">
+                                    <td class="p-2 border border-slate-200">
+                                        <input type="text" placeholder="e.g., Mrs. Davis" class="w-full bg-transparent p-1 border-b border-transparent focus:outline-none focus:border-indigo-500 font-medium">
+                                    </td>
+                                    <td class="p-2 border border-slate-200">
+                                        <input type="number" placeholder="0" class="total-input w-full p-1 bg-slate-50 border rounded text-center focus:ring-indigo-500">
+                                    </td>
+                                    <td class="p-2 border border-slate-200">
+                                        <input type="number" placeholder="0" class="prof-input w-full p-1 bg-slate-50 border rounded text-center focus:ring-indigo-500">
+                                    </td>
+                                    <td class="p-3 border border-slate-200 font-bold text-emerald-600 text-center row-prof-pct">0%</td>
+                                    <td class="p-2 border border-slate-200">
+                                        <input type="number" placeholder="0" class="not-prof-input w-full p-1 bg-slate-50 border rounded text-center focus:ring-indigo-500">
+                                    </td>
+                                    <td class="p-3 border border-slate-200 font-bold text-rose-600 text-center row-not-prof-pct">0%</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="bg-indigo-50 font-bold border-t-2 border-indigo-200 text-xs text-slate-800 tracking-wide uppercase">
+                                    <td class="p-3 border border-slate-200 text-right">PLC Team Totals:</td>
+                                    <td id="team-total" class="p-3 border border-slate-200 text-center text-sm text-slate-900">0</td>
+                                    <td id="team-prof" class="p-3 border border-slate-200 text-center text-sm text-emerald-700">0</td>
+                                    <td id="team-prof-pct" class="p-3 border border-slate-200 text-center text-sm text-emerald-700 font-extrabold">0%</td>
+                                    <td id="team-not-prof" class="p-3 border border-slate-200 text-center text-sm text-rose-700">0</td>
+                                    <td id="team-not-prof-pct" class="p-3 border border-slate-200 text-center text-sm text-rose-700 font-extrabold">0%</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <button type="button" onclick="addTeacherRow()" class="mb-6 inline-flex items-center text-xs font-bold text-indigo-600 hover:text-indigo-500 no-print">
+                        + Add Another Classroom Teacher Row
+                    </button>
+
+                    <div class="border-2 border-dashed border-slate-300 rounded-lg p-5 text-center bg-slate-50 no-print">
+                        <label class="block text-sm font-medium text-slate-700 mb-2 cursor-pointer">
+                            <span class="text-indigo-600 font-semibold hover:text-indigo-500">Upload a picture of your data graph, table, or chart</span> or drag file here
+                            <input type="file" accept="image/*" onchange="previewImage(event)" class="sr-only">
+                        </label>
+                        <p class="text-xs text-slate-400">Accepts PNG, JPG, JPEG formats for reference</p>
+                        <div class="mt-4 flex justify-center">
+                            <img id="data-graph-preview" src="#" alt="Uploaded Data Visual Preview" class="hidden max-h-72 rounded-md shadow border border-slate-200">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-2 mb-4">Step 3: Analyzing Patterns, Misconceptions, & Errors</h2>
+                    
+                    <div class="mb-4 bg-amber-50 p-4 rounded-lg border border-amber-200 text-sm text-amber-900">
+                        <p class="font-semibold">💡 Help Tool (From "analyzingcommonformativeassessmentdataprotocol (1).pdf"):</p>
+                        <p class="mt-1">Evaluate results by individual learning target. Group students systematically by specific errors (e.g., basic operational slips vs. missing foundational conceptual pathways) to pinpoint adjustments.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Overall Areas of Strength by Learning Target</label>
+                            <textarea rows="2" placeholder="What did proficient students do exceptionally well? Which instructional strategies yielded excellent outcomes?" class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Specific Student Misconceptions & Structural Errors</label>
+                            <textarea rows="3" placeholder="What specific errors or misunderstandings led to students missing the target? Group common themes..." class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end no-print">
+                    <button type="button" onclick="switchTab('intervention-plans')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 px-6 rounded-lg shadow transition">
+                        Next: Section 2 - Intervention Plans &rarr;
+                    </button>
+                </div>
+            </section>
+
+
+            <section id="sec-intervention-plans" class="form-section space-y-6 hidden">
+                
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-2 mb-4">Step 4: Determine Instructional Responses & Intervention Modalities</h2>
+                    
+                    <div class="mb-4 bg-amber-50 p-4 rounded-lg border border-amber-200 text-sm text-amber-900">
+                        <p class="font-semibold">💡 Help Tool (From "toolteambasedinterventionplanforstrugglingstudents.pdf"):</p>
+                        <p class="mt-1">Students struggle to master outcomes for different reasons. Create explicit intervention responses targeted directly to the underlying cause of struggle identified below.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <label class="block text-sm font-bold text-slate-800">Select the Specific Intervention Type Planned (Check all that apply):</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="flex items-start p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer text-sm hover:bg-slate-100 transition">
+                                <input type="checkbox" class="mt-1 mr-3 rounded text-indigo-600 focus:ring-indigo-500">
+                                <span><strong>Support with Prerequisite Learning:</strong> Gaps in foundational knowledge/skills preventing mastery of current essential outcomes.</span>
+                            </label>
+                            <label class="flex items-start p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer text-sm hover:bg-slate-100 transition">
+                                <input type="checkbox" class="mt-1 mr-3 rounded text-indigo-600 focus:ring-indigo-500">
+                                <span><strong>Additional Practice:</strong> For students making common mistakes likely easily corrected with a few more opportunities to work with outcomes.</span>
+                            </label>
+                            <label class="flex items-start p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer text-sm hover:bg-slate-100 transition">
+                                <input type="checkbox" class="mt-1 mr-3 rounded text-indigo-600 focus:ring-indigo-500">
+                                <span><strong>Alternative Demonstrations of Mastery:</strong> For students struggling with a specific task who might be able to show mastery differently.</span>
+                            </label>
+                            <label class="flex items-start p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer text-sm hover:bg-slate-100 transition">
+                                <input type="checkbox" class="mt-1 mr-3 rounded text-indigo-600 focus:ring-indigo-500">
+                                <span><strong>Support for Work Behaviors:</strong> Coaching essential learner habits (e.g., coming prepared, participating, completing homework).</span>
+                            </label>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Our Instructional Response Action Steps</label>
+                            <textarea rows="4" placeholder="Detail explicitly how reteaching will happen. Identify lesson resources, targeted groupings, and exact instructional response timelines..." class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-slate-900 border-b pb-1 mb-2">Student Deployment Map</h3>
+                    <p class="text-xs text-slate-500 mb-4">List the specific students in each teacher's classroom who require targeted action plan delivery.</p>
+                    
+                    <div id="roster-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                            <input type="text" placeholder="Teacher Name" class="font-bold text-sm bg-transparent border-b border-slate-300 pb-1 mb-2 w-full focus:outline-none focus:border-indigo-500">
+                            <textarea rows="3" placeholder="List students needing intervention..." class="w-full text-xs p-2 rounded bg-white border border-slate-200 focus:ring-indigo-500"></textarea>
+                        </div>
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                            <input type="text" placeholder="Teacher Name" class="font-bold text-sm bg-transparent border-b border-slate-300 pb-1 mb-2 w-full focus:outline-none focus:border-indigo-500">
+                            <textarea rows="3" placeholder="List students needing intervention..." class="w-full text-xs p-2 rounded bg-white border border-slate-200 focus:ring-indigo-500"></textarea>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addRosterRow()" class="mt-4 inline-flex items-center text-xs font-semibold text-indigo-600 hover:text-indigo-500 no-print">
+                        + Add Additional Classroom Teacher Section
+                    </button>
+                </div>
+
+                <div class="flex justify-between no-print">
+                    <button type="button" onclick="switchTab('data-analysis')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2.5 px-6 rounded-lg transition">
+                        &larr; Back to Data Analysis
+                    </button>
+                    <button type="button" onclick="switchTab('measuring-impact')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 px-6 rounded-lg shadow transition">
+                        Next: Section 3 - Measuring Impact &rarr;
+                    </button>
+                </div>
+            </section>
+
+
+            <section id="sec-measuring-impact" class="form-section space-y-6 hidden">
+                
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-2 mb-4">Step 5: Identify or Develop Post-Intervention Monitoring Tools</h2>
+                    
+                    <div class="mb-4 bg-amber-50 p-4 rounded-lg border border-amber-200 text-sm text-amber-900">
+                        <p class="font-semibold">💡 Help Tool (From "analyzingcommonformativeassessmentdataprotocol (1).pdf"):</p>
+                        <p class="mt-1">Identify items to verify whether students met the learning target after receiving support. Reassessments do not need to be lengthy exams—they can be oral check-ins, parallel prompt variants, or exit slips.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Reassessment Approach Strategy & Monitoring Tools</label>
+                            <textarea rows="2" placeholder="Describe the post-intervention tool or assessment items..." class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Students Still Requiring Assistance with This Target</label>
+                            <textarea rows="2" placeholder="Provide information about which students still need help with this learning target after receiving tier support..." class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-2 mb-4">Step 6: Future Instructional Learnings, Insights, & Work Cycle Improvements</h2>
+                    
+                    <div class="mb-4 bg-amber-50 p-4 rounded-lg border border-amber-200 text-sm text-amber-900">
+                        <p class="font-semibold">💡 Help Tool (From "workcycleforteams.pdf" & "analyzingcommonformativeassessmentdataprotocol (1).pdf"):</p>
+                        <p class="mt-1">Examine any implications for professional practice gained from this data cycle. Reflect on whether team SMART goals were reached, evaluate instructional strategy success, and review group norm alignments.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Implications for Core Curriculum, Pacing, or Assessment Adjustments</label>
+                            <textarea rows="2" placeholder="Discuss the need to adjust or revise curriculum or assessments (such as pacing maps, unit structures, or assessment prompts)..." class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Effective Instructional Strategies to Scale or Retain</label>
+                            <textarea rows="2" placeholder="Identify highly effective instructional strategies to retain or scale across the team, or ineffective practices to phase out..." class="w-full rounded-md border-slate-300 shadow-sm p-2 bg-slate-50 border focus:ring-indigo-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between no-print">
+                    <button type="button" onclick="switchTab('intervention-plans')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2.5 px-6 rounded-lg transition">
+                        &larr; Back to Interventions
+                    </button>
+                    <button type="button" onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 px-6 rounded-lg shadow transition">
+                        Print / Export Final Review Summary
+                    </button>
+                </div>
+            </section>
+
+        </form>
+    </main>
+
+    <footer class="bg-slate-800 text-slate-400 text-xs py-4 text-center border-t border-slate-700 no-print">
+        Aligned with Solution Tree Frameworks: 6-Step Common Formative Assessment Protocol and Team Work Cycles.
+    </footer>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-indigo-600', 'text-indigo-600');
+                btn.classList.add('border-transparent', 'text-slate-500');
+            });
+
+            document.getElementById('sec-' + tabId).classList.remove('hidden');
+
+            const activeTab = document.getElementById('tab-' + tabId);
+            activeTab.classList.remove('border-transparent', 'text-slate-500');
+            activeTab.classList.add('border-indigo-600', 'text-indigo-600');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Global Event Listener for immediate calculation capture (handles existing and newly appended rows flawlessly)
+        document.getElementById('teacher-data-body').addEventListener('input', function(event) {
+            if (event.target.matches('.total-input, .prof-input, .not-prof-input')) {
+                const row = event.target.closest('.teacher-row');
+                calculateRow(row);
+                calculateTeamTotals();
+            }
+        });
+
+        function calculateRow(row) {
+            const total = parseFloat(row.querySelector('.total-input').value) || 0;
+            const proficient = parseFloat(row.querySelector('.prof-input').value) || 0;
+            const notProficient = parseFloat(row.querySelector('.not-prof-input').value) || 0;
+
+            if (total > 0) {
+                row.querySelector('.row-prof-pct').innerText = Math.round((proficient / total) * 100) + '%';
+                row.querySelector('.row-not-prof-pct').innerText = Math.round((notProficient / total) * 100) + '%';
+            } else {
+                row.querySelector('.row-prof-pct').innerText = '0%';
+                row.querySelector('.row-not-prof-pct').innerText = '0%';
+            }
+        }
+
+        function calculateTeamTotals() {
+            let aggregateTotal = 0;
+            let aggregateProf = 0;
+            let aggregateNotProf = 0;
+
+            document.querySelectorAll('.teacher-row').forEach(row => {
+                aggregateTotal += parseFloat(row.querySelector('.total-input').value) || 0;
+                aggregateProf += parseFloat(row.querySelector('.prof-input').value) || 0;
+                aggregateNotProf += parseFloat(row.querySelector('.not-prof-input').value) || 0;
+            });
+
+            document.getElementById('team-total').innerText = aggregateTotal;
+            document.getElementById('team-prof').innerText = aggregateProf;
+            document.getElementById('team-not-prof').innerText = aggregateNotProf;
+
+            if (aggregateTotal > 0) {
+                document.getElementById('team-prof-pct').innerText = Math.round((aggregateProf / aggregateTotal) * 100) + '%';
+                document.getElementById('team-not-prof-pct').innerText = Math.round((aggregateNotProf / aggregateTotal) * 100) + '%';
+            } else {
+                document.getElementById('team-prof-pct').innerText = '0%';
+                document.getElementById('team-not-prof-pct').innerText = '0%';
+            }
+        }
+
+        function addTeacherRow() {
+            const tbody = document.getElementById('teacher-data-body');
+            const newRow = document.createElement('tr');
+            newRow.className = "teacher-row";
+            newRow.innerHTML = `
+                <td class="p-2 border border-slate-200">
+                    <input type="text" placeholder="Teacher Name" class="w-full bg-transparent p-1 border-b border-transparent focus:outline-none focus:border-indigo-500 font-medium">
+                </td>
+                <td class="p-2 border border-slate-200">
+                    <input type="number" placeholder="0" class="total-input w-full p-1 bg-slate-50 border rounded text-center focus:ring-indigo-500">
+                </td>
+                <td class="p-2 border border-slate-200">
+                    <input type="number" placeholder="0" class="prof-input w-full p-1 bg-slate-50 border rounded text-center focus:ring-indigo-500">
+                </td>
+                <td class="p-3 border border-slate-200 font-bold text-emerald-600 text-center row-prof-pct">0%</td>
+                <td class="p-2 border border-slate-200">
+                    <input type="number" placeholder="0" class="not-prof-input w-full p-1 bg-slate-50 border rounded text-center focus:ring-indigo-500">
+                </td>
+                <td class="p-3 border border-slate-200 font-bold text-rose-600 text-center row-not-prof-pct">0%</td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const output = document.getElementById('data-graph-preview');
+                output.src = reader.result;
+                output.classList.remove('hidden');
+            };
+            if(event.target.files[0]) {
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        }
+
+        function addRosterRow() {
+            const grid = document.getElementById('roster-grid');
+            const newCard = document.createElement('div');
+            newCard.className = "p-4 bg-slate-50 border border-slate-200 rounded-lg";
+            newCard.innerHTML = `
+                <input type="text" placeholder="Teacher Name" class="font-bold text-sm bg-transparent border-b border-slate-300 pb-1 mb-2 w-full focus:outline-none focus:border-indigo-500">
+                <textarea rows="3" placeholder="List students needing intervention..." class="w-full text-xs p-2 rounded bg-white border border-slate-200 focus:ring-indigo-500"></textarea>
+            `;
+            grid.appendChild(newCard);
+        }
+    </script>
+
+    <script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2026/06/15/23/20260615232418-PWZF74SB.js" defer></script>
+</body>
+</html>
